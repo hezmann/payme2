@@ -2677,18 +2677,29 @@ function shuffle(array) {
                     const allRunOptions = [...extensionOptions.slice(0, MAX_EXTENSION_OPTIONS), ...aceHighOptions.slice(0, MAX_ACE_HIGH_OPTIONS)];
                     
                     for (const runRanks of allRunOptions) {
-                        const display = runRanks.map(r => {
-                            const rank = r === 13 ? 'A' : rankOrder[r];
-                            return `${rank}${suit}`;
+                        // Build display array preserving normal cards and showing wild assignments
+                        const display = [];
+                        const assignments = {};
+                        
+                        // Create a map of rank to original card for normal cards
+                        const normalCardsByRank = new Map();
+                        nonWilds.forEach(c => {
+                            const rankIdx = c.rank === 'A' && runRanks.includes(13) ? 13 : rankOrder.indexOf(c.rank);
+                            normalCardsByRank.set(rankIdx, c);
                         });
                         
-                        const assignments = {};
+                        // Process each position in the run
                         let wildIdx = 0;
-                        const nonWildRankSet = new Set(nonWilds.map(c => c.rank === 'A' && runRanks.includes(13) ? 'A' : c.rank));
-                        
                         runRanks.forEach(r => {
                             const rank = r === 13 ? 'A' : rankOrder[r];
-                            if (!nonWildRankSet.has(rank) && wildIdx < wilds.length) {
+                            
+                            if (normalCardsByRank.has(r)) {
+                                // This position has a normal card - use its original rank and suit
+                                const originalCard = normalCardsByRank.get(r);
+                                display.push(`${originalCard.rank}${originalCard.suit}`);
+                            } else if (wildIdx < wilds.length) {
+                                // This position needs a wild card
+                                display.push(`${rank}${suit}`);
                                 assignments[wilds[wildIdx].id] = `${rank}${suit}`;
                                 wildIdx++;
                             }
