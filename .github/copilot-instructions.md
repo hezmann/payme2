@@ -43,7 +43,7 @@ This is a web-based implementation of the "Pay Me" card game built as a single-p
 - Game state is managed through React hooks
 - Card game rules are implemented in pure JavaScript functions
 - AI player logic is deterministic and rule-based
-- Support for multiple rounds (11 rounds total)
+- Game consists of 11 rounds (rounds 1-11, verified by `round < 11` checks in code)
 - Wild cards and melds follow standard card game conventions
 
 ## Important Considerations
@@ -64,6 +64,7 @@ This is a web-based implementation of the "Pay Me" card game built as a single-p
 ### Code Style
 - Indent with 4 spaces for nested code blocks (consistent with existing code)
 - Function-level declarations have no indentation, nested blocks increase by 4 spaces
+- React component JSX returns follow the same 4-space indentation pattern
 - Keep lines reasonably short for readability
 - Comment complex game logic clearly
 - Use modern ES6+ JavaScript features (arrow functions, destructuring, etc.)
