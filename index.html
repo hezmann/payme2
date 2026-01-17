@@ -2681,8 +2681,9 @@ function shuffle(array) {
                         const display = [];
                         const assignments = {};
                         // Track which card ID corresponds to each display position in runs
-                        // This is necessary because for runs, display array is sorted by rank order,
-                        // but currentMeld maintains the original user click order (arbitrary)
+                        // This is necessary ONLY for runs where display array gets reordered by rank,
+                        // while currentMeld maintains the original user click order (arbitrary).
+                        // Without this mapping, normal cards can be incorrectly shown as wild cards in the UI.
                         const cardIds = [];
                         
                         // Create a map of rank to original card for normal cards
@@ -8647,47 +8648,48 @@ const processAITurn = () => {
                                             {/* Single-step picker for melds with at least one non-wild */}
                                             <h3>Choose Meld Interpretation</h3>
                                             <div style={{maxHeight: '400px', overflowY: 'auto', marginBottom: '15px'}}>
-                                                {meldPickerOptions.map((option, idx) => {
-                                                    // Handle sets differently - display is a string label
-                                                    if (option.type === 'set' && typeof option.display === 'string') {
-                                                        return (
-                                                            <div 
-                                                                key={idx}
-                                                                onClick={() => handleMeldPickerSelection(option)}
-                                                                style={{
-                                                                    padding: '15px 20px',
-                                                                    margin: '8px 0',
-                                                                    background: '#f8f9fa',
-                                                                    borderRadius: '6px',
-                                                                    cursor: 'pointer',
-                                                                    border: '2px solid transparent',
-                                                                    transition: 'all 0.2s',
-                                                                    textAlign: 'center',
-                                                                    fontSize: '18px',
-                                                                    fontWeight: '600',
-                                                                    color: '#1e3c72'
-                                                                }}
-                                                                onMouseEnter={(e) => e.currentTarget.style.borderColor = '#2a5298'}
-                                                                onMouseLeave={(e) => e.currentTarget.style.borderColor = 'transparent'}
-                                                            >
-                                                                {option.display}
-                                                                <div style={{
-                                                                    fontSize: '12px',
-                                                                    fontWeight: 'normal',
-                                                                    color: '#666',
-                                                                    marginTop: '5px'
-                                                                }}>
-                                                                    (Suits will be auto-assigned)
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    }
-                                                    
-                                                    // Handle runs normally - display is an array of card strings
-                                                    // Create a card lookup map for efficient access
+                                                {/* Create card lookup map once for all options for efficient O(1) access */}
+                                                {(() => {
                                                     const cardLookupMap = new Map(currentMeld.map(c => [c.id, c]));
                                                     
-                                                    return (
+                                                    return meldPickerOptions.map((option, idx) => {
+                                                        // Handle sets differently - display is a string label
+                                                        if (option.type === 'set' && typeof option.display === 'string') {
+                                                            return (
+                                                                <div 
+                                                                    key={idx}
+                                                                    onClick={() => handleMeldPickerSelection(option)}
+                                                                    style={{
+                                                                        padding: '15px 20px',
+                                                                        margin: '8px 0',
+                                                                        background: '#f8f9fa',
+                                                                        borderRadius: '6px',
+                                                                        cursor: 'pointer',
+                                                                        border: '2px solid transparent',
+                                                                        transition: 'all 0.2s',
+                                                                        textAlign: 'center',
+                                                                        fontSize: '18px',
+                                                                        fontWeight: '600',
+                                                                        color: '#1e3c72'
+                                                                    }}
+                                                                    onMouseEnter={(e) => e.currentTarget.style.borderColor = '#2a5298'}
+                                                                    onMouseLeave={(e) => e.currentTarget.style.borderColor = 'transparent'}
+                                                                >
+                                                                    {option.display}
+                                                                    <div style={{
+                                                                        fontSize: '12px',
+                                                                        fontWeight: 'normal',
+                                                                        color: '#666',
+                                                                        marginTop: '5px'
+                                                                    }}>
+                                                                        (Suits will be auto-assigned)
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        }
+                                                        
+                                                        // Handle runs normally - display is an array of card strings
+                                                        return (
                                                         <div 
                                                             key={idx}
                                                             onClick={() => handleMeldPickerSelection(option)}
@@ -8824,7 +8826,8 @@ const processAITurn = () => {
                                                             })}
                                                         </div>
                                                     );
-                                                })}
+                                                });
+                                            })()}
                                             </div>
                                         </>
                                     )}
