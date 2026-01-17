@@ -2680,7 +2680,9 @@ function shuffle(array) {
                         // Build display array preserving normal cards and showing wild assignments
                         const display = [];
                         const assignments = {};
-                        const cardIds = []; // Track which card ID corresponds to each display position
+                        // Track which card ID corresponds to each display position
+                        // This is necessary because display array is sorted by rank, but currentMeld maintains user click order
+                        const cardIds = [];
                         
                         // Create a map of rank to original card for normal cards
                         // Note: In a valid run, each rank appears at most once, so no overwrites should occur
@@ -8681,6 +8683,9 @@ const processAITurn = () => {
                                                     }
                                                     
                                                     // Handle runs normally - display is an array of card strings
+                                                    // Create a card lookup map for efficient access
+                                                    const cardLookupMap = new Map(currentMeld.map(c => [c.id, c]));
+                                                    
                                                     return (
                                                         <div 
                                                             key={idx}
@@ -8709,7 +8714,7 @@ const processAITurn = () => {
                                                                 // Get the actual card using cardIds mapping
                                                                 // For runs, option.cardIds[cardIdx] gives us the card ID at this display position
                                                                 const cardId = option.cardIds ? option.cardIds[cardIdx] : null;
-                                                                const originalCard = cardId ? currentMeld.find(c => c.id === cardId) : currentMeld[cardIdx];
+                                                                const originalCard = cardId ? cardLookupMap.get(cardId) : currentMeld[cardIdx];
                                                                 const isWildCard = originalCard && originalCard.rank && originalCard.suit && isWild(originalCard, round);
                                                                 
                                                                 if (isWildCard) {
