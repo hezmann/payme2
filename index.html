@@ -2680,8 +2680,9 @@ function shuffle(array) {
                         // Build display array preserving normal cards and showing wild assignments
                         const display = [];
                         const assignments = {};
-                        // Track which card ID corresponds to each display position
-                        // This is necessary because display array is sorted by rank, but currentMeld maintains user click order
+                        // Track which card ID corresponds to each display position in runs
+                        // This is necessary because for runs, display array is sorted by rank order,
+                        // but currentMeld maintains the original user click order (arbitrary)
                         const cardIds = [];
                         
                         // Create a map of rank to original card for normal cards
@@ -8714,6 +8715,7 @@ const processAITurn = () => {
                                                                 // Get the actual card using cardIds mapping
                                                                 // For runs, option.cardIds[cardIdx] gives us the card ID at this display position
                                                                 const cardId = option.cardIds ? option.cardIds[cardIdx] : null;
+                                                                // Fallback to index-based lookup for backwards compatibility (e.g., sets or old data)
                                                                 const originalCard = cardId ? cardLookupMap.get(cardId) : currentMeld[cardIdx];
                                                                 const isWildCard = originalCard && originalCard.rank && originalCard.suit && isWild(originalCard, round);
                                                                 
