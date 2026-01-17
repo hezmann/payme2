@@ -1190,14 +1190,15 @@
         .meld-group {
             margin-bottom: 15px;
             background: #f8f9fa;
-            padding: 15px;
+            padding: clamp(12px, 1.5vh, 18px);
             border-radius: 8px;
             border: 2px solid #dee2e6;
         }
         
         .meld-building-area .meld-group {
-            margin-bottom: 6px;
-            padding: 8px;
+            margin-bottom: 8px;
+            padding: clamp(10px, 1.2vh, 14px);
+            min-height: clamp(140px, 18vh, 200px);
         }
 
         .meld-header {
@@ -1224,30 +1225,32 @@
         .meld-building-area {
             background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
             border: 2px solid #ffc107;
-            padding: 6px 10px;
+            padding: clamp(10px, 1.5vh, 16px) clamp(12px, 2vw, 20px);
             border-radius: 12px;
-            margin: 6px 10px; /* inset on both sides (contained in panel) */
+            margin: clamp(8px, 1vh, 12px) clamp(10px, 1.5vw, 16px);
             box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
             box-sizing: border-box;
-            max-width: calc(100% - 20px);
+            max-width: calc(100% - 32px);
             align-self: stretch;
-            flex: 1;
-            min-height: 0;
-            max-height: none;
-            overflow-y: visible;
+            flex: 1 1 auto;
+            min-height: clamp(200px, 30vh, 400px);
+            max-height: 60vh;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
+            gap: 12px;
         }
         
         .meld-building-content {
             display: flex;
-            gap: 12px;
-            flex: 1;
-            min-height: 0;
+            gap: clamp(10px, 1.5vw, 16px);
+            flex: 1 1 auto;
+            min-height: clamp(150px, 20vh, 250px);
             overflow-x: auto;
-            overflow-y: hidden;
+            overflow-y: visible;
             flex-wrap: nowrap;
             align-items: flex-start;
+            padding: 4px;
         }
         
         .your-melds-section {
@@ -1261,7 +1264,7 @@
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
-            min-width: fit-content;
+            min-width: clamp(280px, 40vw, 500px);
             max-width: none;
         }
         
@@ -1274,6 +1277,13 @@
             .your-melds-section,
             .current-meld-section {
                 max-width: none;
+                min-width: clamp(250px, 35vw, 400px);
+            }
+            
+            .meld-building-area {
+                min-height: clamp(180px, 25vh, 320px);
+                max-height: 55vh;
+                padding: clamp(8px, 1.2vh, 12px) clamp(10px, 1.5vw, 14px);
             }
         }
         
@@ -1526,6 +1536,31 @@
                 font-size: 14px;
             }
             
+            .meld-building-area {
+                min-height: clamp(160px, 22vh, 280px);
+                max-height: 50vh;
+                margin: 6px 8px;
+                padding: 8px 10px;
+            }
+            
+            .meld-building-content {
+                gap: 8px;
+                min-height: clamp(130px, 18vh, 220px);
+            }
+            
+            .current-meld-section {
+                min-width: clamp(220px, 80vw, 300px);
+            }
+            
+            .meld-group {
+                padding: 8px;
+                margin-bottom: 6px;
+            }
+            
+            .meld-building-area .meld-group {
+                min-height: clamp(120px, 16vh, 180px);
+            }
+            
             .winner-hand-fixed {
                 padding: 6px 8px;
                 margin: 0 8px 8px 0;
@@ -1578,6 +1613,25 @@
             .actions button {
                 font-size: 13px;
                 padding: 8px 12px;
+            }
+            
+            .meld-building-area {
+                min-height: clamp(140px, 20vh, 240px);
+                max-height: 45vh;
+                margin: 4px 6px;
+                padding: 6px 8px;
+            }
+            
+            .meld-building-content {
+                min-height: clamp(110px, 16vh, 200px);
+            }
+            
+            .current-meld-section {
+                min-width: 200px;
+            }
+            
+            .meld-building-area .meld-group {
+                min-height: clamp(100px, 14vh, 160px);
             }
         }
     
@@ -1783,7 +1837,8 @@
 
 /* Ensure the right panel's scroll area doesn't get covered by the fixed hand or final play panel */
 .game-screen{
-  padding-bottom: 260px; /* increased to prevent overlap with your-final-play-panel */
+  padding-bottom: clamp(240px, 30vh, 320px);
+  overflow-y: auto;
 }
 
 /* --- Your Final Play Panel (matches Your Hand styling) --- */
