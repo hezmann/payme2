@@ -62,7 +62,8 @@ This is a web-based implementation of the "Pay Me" card game built as a single-p
 - Test responsive design on different screen sizes
 
 ### Code Style
-- Indent with 4 spaces (consistent with existing code)
+- Indent with 4 spaces for nested code blocks (consistent with existing code)
+- Function-level declarations have no indentation, nested blocks increase by 4 spaces
 - Keep lines reasonably short for readability
 - Comment complex game logic clearly
 - Use modern ES6+ JavaScript features (arrow functions, destructuring, etc.)
