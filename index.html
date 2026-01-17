@@ -2680,6 +2680,11 @@ function shuffle(array) {
                         // Build display array preserving normal cards and showing wild assignments
                         const display = [];
                         const assignments = {};
+                        // Track which card ID corresponds to each display position in runs
+                        // This is necessary ONLY for runs where display array gets reordered by rank,
+                        // while currentMeld maintains the original user click order (arbitrary).
+                        // Without this mapping, normal cards can be incorrectly shown as wild cards in the UI.
+                        const cardIds = [];
                         
                         // Create a map of rank to original card for normal cards
                         // Note: In a valid run, each rank appears at most once, so no overwrites should occur
@@ -2700,10 +2705,12 @@ function shuffle(array) {
                                 // This position has a normal card - use its original rank and suit
                                 const originalCard = normalCardsByRank.get(r);
                                 display.push(`${originalCard.rank}${originalCard.suit}`);
+                                cardIds.push(originalCard.id); // Track the card ID
                             } else if (wildIdx < wilds.length) {
                                 // This position needs a wild card
                                 display.push(`${rank}${suit}`);
                                 assignments[wilds[wildIdx].id] = `${rank}${suit}`;
+                                cardIds.push(wilds[wildIdx].id); // Track the wild card ID
                                 wildIdx++;
                             }
                         });
@@ -2711,7 +2718,8 @@ function shuffle(array) {
                         options.push({
                             type: 'run',
                             display: display,
-                            assignments: assignments
+                            assignments: assignments,
+                            cardIds: cardIds // Add card ID mapping
                         });
                     }
                 } else {
@@ -2719,7 +2727,8 @@ function shuffle(array) {
                     options.push({
                         type: 'run',
                         display: nonWilds.map(c => `${c.rank}${c.suit}`),
-                        assignments: {}
+                        assignments: {},
+                        cardIds: nonWilds.map(c => c.id) // Add card ID mapping for no-wild runs
                     });
                 }
             }
@@ -8639,44 +8648,48 @@ const processAITurn = () => {
                                             {/* Single-step picker for melds with at least one non-wild */}
                                             <h3>Choose Meld Interpretation</h3>
                                             <div style={{maxHeight: '400px', overflowY: 'auto', marginBottom: '15px'}}>
-                                                {meldPickerOptions.map((option, idx) => {
-                                                    // Handle sets differently - display is a string label
-                                                    if (option.type === 'set' && typeof option.display === 'string') {
-                                                        return (
-                                                            <div 
-                                                                key={idx}
-                                                                onClick={() => handleMeldPickerSelection(option)}
-                                                                style={{
-                                                                    padding: '15px 20px',
-                                                                    margin: '8px 0',
-                                                                    background: '#f8f9fa',
-                                                                    borderRadius: '6px',
-                                                                    cursor: 'pointer',
-                                                                    border: '2px solid transparent',
-                                                                    transition: 'all 0.2s',
-                                                                    textAlign: 'center',
-                                                                    fontSize: '18px',
-                                                                    fontWeight: '600',
-                                                                    color: '#1e3c72'
-                                                                }}
-                                                                onMouseEnter={(e) => e.currentTarget.style.borderColor = '#2a5298'}
-                                                                onMouseLeave={(e) => e.currentTarget.style.borderColor = 'transparent'}
-                                                            >
-                                                                {option.display}
-                                                                <div style={{
-                                                                    fontSize: '12px',
-                                                                    fontWeight: 'normal',
-                                                                    color: '#666',
-                                                                    marginTop: '5px'
-                                                                }}>
-                                                                    (Suits will be auto-assigned)
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    }
+                                                {/* Create card lookup map once for all options for efficient O(1) access */}
+                                                {(() => {
+                                                    const cardLookupMap = new Map(currentMeld.map(c => [c.id, c]));
                                                     
-                                                    // Handle runs normally - display is an array of card strings
-                                                    return (
+                                                    return meldPickerOptions.map((option, idx) => {
+                                                        // Handle sets differently - display is a string label
+                                                        if (option.type === 'set' && typeof option.display === 'string') {
+                                                            return (
+                                                                <div 
+                                                                    key={idx}
+                                                                    onClick={() => handleMeldPickerSelection(option)}
+                                                                    style={{
+                                                                        padding: '15px 20px',
+                                                                        margin: '8px 0',
+                                                                        background: '#f8f9fa',
+                                                                        borderRadius: '6px',
+                                                                        cursor: 'pointer',
+                                                                        border: '2px solid transparent',
+                                                                        transition: 'all 0.2s',
+                                                                        textAlign: 'center',
+                                                                        fontSize: '18px',
+                                                                        fontWeight: '600',
+                                                                        color: '#1e3c72'
+                                                                    }}
+                                                                    onMouseEnter={(e) => e.currentTarget.style.borderColor = '#2a5298'}
+                                                                    onMouseLeave={(e) => e.currentTarget.style.borderColor = 'transparent'}
+                                                                >
+                                                                    {option.display}
+                                                                    <div style={{
+                                                                        fontSize: '12px',
+                                                                        fontWeight: 'normal',
+                                                                        color: '#666',
+                                                                        marginTop: '5px'
+                                                                    }}>
+                                                                        (Suits will be auto-assigned)
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        }
+                                                        
+                                                        // Handle runs normally - display is an array of card strings
+                                                        return (
                                                         <div 
                                                             key={idx}
                                                             onClick={() => handleMeldPickerSelection(option)}
@@ -8701,8 +8714,11 @@ const processAITurn = () => {
                                                                 const [, rank, suit] = match;
                                                                 const isRed = suit === '♥' || suit === '♦';
                                                                 
-                                                                // Check if the original card at this position is wild
-                                                                const originalCard = currentMeld[cardIdx];
+                                                                // Get the actual card using cardIds mapping
+                                                                // For runs, option.cardIds[cardIdx] gives us the card ID at this display position
+                                                                const cardId = option.cardIds ? option.cardIds[cardIdx] : null;
+                                                                // Fallback to index-based lookup for backwards compatibility (e.g., sets or old data)
+                                                                const originalCard = cardId ? cardLookupMap.get(cardId) : currentMeld[cardIdx];
                                                                 const isWildCard = originalCard && originalCard.rank && originalCard.suit && isWild(originalCard, round);
                                                                 
                                                                 if (isWildCard) {
@@ -8810,7 +8826,8 @@ const processAITurn = () => {
                                                             })}
                                                         </div>
                                                     );
-                                                })}
+                                                });
+                                            })()}
                                             </div>
                                         </>
                                     )}
