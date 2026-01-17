@@ -2682,8 +2682,11 @@ function shuffle(array) {
                         const assignments = {};
                         
                         // Create a map of rank to original card for normal cards
+                        // Note: In a valid run, each rank appears at most once, so no overwrites should occur
                         const normalCardsByRank = new Map();
                         nonWilds.forEach(c => {
+                            // For Ace in Ace-high runs (Q-K-A), map to position 13 instead of 0
+                            // Since a run can only have one Ace (either low or high), this is unambiguous
                             const rankIdx = c.rank === 'A' && runRanks.includes(13) ? 13 : rankOrder.indexOf(c.rank);
                             normalCardsByRank.set(rankIdx, c);
                         });
