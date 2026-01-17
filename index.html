@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pay Me - Card Game</title>
-    <!-- React and React DOM libraries for building UI components (bundled locally) -->
-    <script crossorigin src="lib/react.production.min.js"></script>
-    <script crossorigin src="lib/react-dom.production.min.js"></script>
-    <!-- Babel Standalone for transpiling JSX syntax to JavaScript in the browser (bundled locally) -->
-    <script src="lib/babel.min.js"></script>
+    <!-- React and React DOM libraries for building UI components (via CDN) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel Standalone for transpiling JSX syntax to JavaScript in the browser (via CDN) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
         * {
@@ -716,7 +716,7 @@
             justify-content: center;
             margin: 0 12px 0 0;
             flex-wrap: wrap;
-            flex-shrink: 0;
+            flex: 0 0 auto;
             background: white;
             border: 2px solid #dee2e6;
             border-radius: 12px;
@@ -1109,7 +1109,7 @@
             margin: 0;
             position: relative;
             z-index: 10;
-            flex-shrink: 0;
+            flex: 0 0 auto;
         }
 
         .hand-label {
@@ -1182,14 +1182,14 @@
         
         /* Fixed winner's hand at top of main game area */
         .winner-hand-fixed {
-            flex-shrink: 0;
+            flex: 0 0 auto;
             background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
             border: 2px solid #28a745;
             border-radius: 12px;
             padding: 8px 12px;
             margin: 0 12px 8px 0;
             box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
-            max-height: 30vh;
+            max-height: 25vh;
             min-height: 100px;
             overflow-y: auto;
         }
@@ -1209,7 +1209,7 @@
         .meld-building-area .meld-group {
             margin-bottom: 8px;
             padding: clamp(10px, 1.2vh, 14px);
-            min-height: clamp(140px, 18vh, 200px);
+            min-height: 140px;
         }
 
         .meld-header {
@@ -1243,9 +1243,8 @@
             box-sizing: border-box;
             max-width: calc(100% - 2 * clamp(10px, 1.5vw, 16px));
             align-self: stretch;
-            flex: 1 1 auto;
-            min-height: clamp(200px, 30vh, 400px);
-            max-height: 60vh;
+            flex: 1 1 50%;
+            min-height: 200px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -1256,7 +1255,7 @@
             display: flex;
             gap: clamp(10px, 1.5vw, 16px);
             flex: 1 1 auto;
-            min-height: clamp(150px, 20vh, 250px);
+            min-height: 150px;
             overflow-x: auto;
             overflow-y: visible;
             flex-wrap: nowrap;
@@ -1292,8 +1291,7 @@
             }
             
             .meld-building-area {
-                min-height: clamp(180px, 25vh, 320px);
-                max-height: 55vh;
+                min-height: 180px;
                 padding: clamp(8px, 1.2vh, 12px) clamp(10px, 1.5vw, 14px);
             }
         }
@@ -1540,8 +1538,7 @@
             }
             
             .meld-building-area {
-                min-height: clamp(160px, 22vh, 280px);
-                max-height: 50vh;
+                min-height: 160px;
                 margin: 6px 8px;
                 padding: 8px 10px;
             }
@@ -1552,7 +1549,7 @@
             
             .meld-building-content {
                 gap: 8px;
-                min-height: clamp(130px, 18vh, 220px);
+                min-height: 130px;
             }
             
             .current-meld-section {
@@ -1565,7 +1562,7 @@
             }
             
             .meld-building-area .meld-group {
-                min-height: clamp(120px, 16vh, 180px);
+                min-height: 120px;
             }
             
             .winner-hand-fixed {
@@ -1618,14 +1615,13 @@
             }
             
             .meld-building-area {
-                min-height: clamp(140px, 20vh, 240px);
-                max-height: 45vh;
+                min-height: 140px;
                 margin: 4px 6px;
                 padding: 6px 8px;
             }
             
             .meld-building-content {
-                min-height: clamp(110px, 16vh, 200px);
+                min-height: 110px;
             }
             
             .current-meld-section {
@@ -1633,7 +1629,7 @@
             }
             
             .meld-building-area .meld-group {
-                min-height: clamp(100px, 14vh, 160px);
+                min-height: 100px;
             }
         }
     
